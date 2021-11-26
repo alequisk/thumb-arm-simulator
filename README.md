@@ -6,6 +6,6 @@ Provided with a file with the binary codes of an arm program, it should simulate
 
 ## Run
 
-For this program you need to use the gcc version 8.0 or early and should be able the flags '-stdc++20' or '-stdc++2a' in Makefile.
+For this program you need to use the gcc version 8.0 or early and should be able the flags `-stdc++20` or `-stdc++2a` in Makefile.
 
-For build this project you need to run 'make' in project folder and after run './ThumbSimulator filename.ext'.
+For build this project you need to run `make` in project folder and after run `./ThumbSimulator filename.ext`.
