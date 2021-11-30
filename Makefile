@@ -19,6 +19,7 @@ CC=g++
 CC_FLAGS=-std=c++2a   \
 				 -c 					\
          -W         	\
+				 -DDEBUG			\
          -Wall
 
 # Command used at clean target
