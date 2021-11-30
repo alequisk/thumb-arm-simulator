@@ -2,17 +2,18 @@
 
 #include <iostream>
 #include <iomanip>
+#include <string.h>
+
+Core::Core() :
+  pc(PROGRAM_MEM_ADDRESS), lr(0), sp(STACK_POINTER_ADDRESS), cpsr(SUPERVISOR_MODE | THUMB_MODE), spsr(0) {
+  memset(r, 0, sizeof (r));
+}
 
 void Core::describe() {
   std::cout << std::setw(6) << "pc: "   << "0x" << std::hex << pc << std::endl;
-  std::cout << std::setw(6) << "r0: "   << "0x" << std::hex << r0 << std::endl;
-  std::cout << std::setw(6) << "r1: "   << "0x" << std::hex << r1 << std::endl;
-  std::cout << std::setw(6) << "r2: "   << "0x" << std::hex << r2 << std::endl;
-  std::cout << std::setw(6) << "r3: "   << "0x" << std::hex << r3 << std::endl;
-  std::cout << std::setw(6) << "r4: "   << "0x" << std::hex << r4 << std::endl;
-  std::cout << std::setw(6) << "r5: "   << "0x" << std::hex << r5 << std::endl;
-  std::cout << std::setw(6) << "r6: "   << "0x" << std::hex << r6 << std::endl;
-  std::cout << std::setw(6) << "r7: "   << "0x" << std::hex << r7 << std::endl;
+  for (int index = 0; index < 7; ++index) {
+    std::cout << std::setw(6) << "r" << index << ": "   << "0x" << std::hex << r[index] << std::endl;
+  }
   std::cout << std::setw(6) << "cpsr: " << std::setw(13) << ps_to_string(cpsr) << std::endl;
   std::cout << std::setw(6) << "spsr: " << std::setw(13) << ps_to_string(spsr) << std::endl;
 }
