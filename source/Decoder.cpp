@@ -1,6 +1,7 @@
 #include "Decoder.h"
 #include "Constants.h"
 #include <iostream>
+#include <limits.h>
 
 void Decoder::decode(signed short int instruction, int& psr, int *reg) {
   int instruction_code = (instruction >> 12) & 0b1111;
@@ -113,5 +114,66 @@ void Decoder::decode(signed short int instruction, int& psr, int *reg) {
     }
   }
 
+  /*** Fifth line ***/
+  if (instruction_code == 0b0010) {
+    int op = (instruction >> 11) & 0b1;
+    int ld_ln = (instruction >> 8) & 0b111;
+    int immed8 = instruction & 0b11111111;
+
+    if (op == 0b0) {
+      /*** MOV | Ld/Ln, immed8 ***/
+#ifdef DEBUG 
+      std::cout << "(Decoder) MOV | Ld/Ln, immed8" << std::endl;
+#endif     
+      reg[ld_ln] = immed8;
+      return;
+    } else {
+      /*** CMP | Ld/Ln, immed8 ***/
+#ifdef DEBUG 
+      std::cout << "(Decoder) CMP | Ld/Ln, immed8" << std::endl;
+#endif
+
+      int64_t register_origin = reg[ld_ln];
+      int64_t immed8_64 = immed8;  
+
+      int64_t result = register_origin - immed8_64;
+
+
+      bool isNegative = (result >> 31) & 0b1;
+      bool isZero = result == 0b0;
+      bool haveOverflow = checkOverflow(reg[ld_ln], immed8, SUB);
+      bool haveCarry = false;
+      bool haveSaturation = haveOverflow;
+      
+      psr &= ~NEGATIVE_FLAG;
+      psr &= ~ZERO_FLAG;
+      psr &= ~CARRY_FLAG;
+      psr &= ~OVERFLOW_FLAG;
+      psr &= ~SATURATED_FLAG;
+
+      if (isNegative) psr |= NEGATIVE_FLAG;
+      if (isZero) psr |= ZERO_FLAG;
+      if (haveOverflow) psr |= OVERFLOW_FLAG;
+      if (haveCarry) psr |= CARRY_FLAG;
+      if (haveSaturation) psr |= SATURATED_FLAG;
+      
+      return;
+    }
+  }
+
   throw "Undefined instruction to decode."; // return Error of instruction
+}
+
+bool Decoder::checkOverflow(int a, int b, OPERATORS op) {
+  if (op == ADD) {
+    if ((b > 0) && (a > INT_MAX - b))  return true; /* `a + x` would overflow */;
+    if ((b < 0) && (a < INT_MIN - b))  return true; /* `a + x` would underflow */;
+  }
+
+  if (op == SUB) {
+    if ((b < 0) && (a > INT_MAX + b)) return true; /* `a - x` would overflow */;
+    if ((b > 0) && (a < INT_MIN + b)) return true; /* `a - x` would underflow */;
+  }
+
+  return false;
 }

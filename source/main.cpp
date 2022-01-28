@@ -19,8 +19,9 @@ int main (int argc, char** argv) {
   Core core;
 
   file_parser.handle();
+
   for (auto p: file_parser.get_program_mapped()) {
-    
+  
     core.run_instruction((p.second & LEFT_INSTRUCTION) >> 16);
     core.describe();
 
@@ -28,6 +29,6 @@ int main (int argc, char** argv) {
     core.describe();
   }
   
-
+  
   return (0);
 }
