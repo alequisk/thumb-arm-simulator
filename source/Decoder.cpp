@@ -4,13 +4,16 @@
 
 void Decoder::decode(signed short int instruction, int& psr, int *reg) {
   int instruction_code = (instruction >> 12) & 0b1111;
+
+  /*** First line ***/
   if (instruction_code == 0b0000) {
     int op = (instruction >> 11) & 0b1;
     int ld = instruction & 0b111;
     int lm = (instruction >> 3) & 0b111;
     int immed5 = (instruction >> 6) & 0b11111;
 
-    if (op == 0b0) { // LSL | immed5 Lm Ld
+    if (op == 0b0) {
+      /*** LSL | immed5 Lm Ld ***/
 #ifdef DEBUG 
       std::cout << std::hex << "(Decoder) LSL | immed5=" << immed5 << " Lm=" << lm << " Ld=" << ld << std::dec << std::endl;
 #endif
@@ -21,7 +24,9 @@ void Decoder::decode(signed short int instruction, int& psr, int *reg) {
         psr &= ~CARRY_FLAG; // clear carry flag
       }
       return;
-    } else { // LSR | immed5 Lm Ld
+    
+    } else {
+      /*** LSR | immed5 Lm Ld ***/
 #ifdef DEBUG
       std::cout << std::hex << "(Decoder) LSR | immed5=" << immed5 << " Lm=" << lm << " Ld=" << ld << std::dec << std::endl;
 #endif
@@ -36,7 +41,10 @@ void Decoder::decode(signed short int instruction, int& psr, int *reg) {
   }
 
   if (instruction_code == 0b0001) {
-    if (((instruction >> 11) & 0b1) == 0b0) { // ASR | immed5 Lm Ld
+    /*** Second line ***/
+
+    if (((instruction >> 11) & 0b1) == 0b0) {
+      /*** ASR | immed5 Lm Ld ***/
 #ifdef DEBUG 
       std::cout << "(Decoder) ASR | immed5 Lm Ld" << std::endl;
 #endif
@@ -51,8 +59,57 @@ void Decoder::decode(signed short int instruction, int& psr, int *reg) {
         psr &= ~CARRY_FLAG; // clear carry flag
       }
       return;
-    } else { // ADD | SUB
+    } else {
+      
+      if (((instruction >> 10) & 0b1) == 0b0) {
+        /*** Third line **/
 
+        int op = ((instruction) >> 9) & 0b1;
+        int ld = instruction & 0b111;
+        int ln = (instruction >> 3) & 0b111;
+        int lm = (instruction >> 6) & 0b111;
+
+        /*** ADD | SUB ***/
+        if (op == 0b0) {
+          /*** ADD | Lm, Ln, Ld ***/
+#ifdef DEBUG 
+          std::cout << "(Decoder) ADD | Lm, Ln, Ld" << std::endl;
+#endif
+          reg[ld] = reg[ln] + reg[lm];
+          return;
+        } else {
+
+          /*** SUB | Lm, Ln, Ld ***/
+#ifdef DEBUG 
+          std::cout << "(Decoder) SUB | Lm, Ln, Ld" << std::endl;
+#endif
+          reg[ld] = reg[ln] - reg[lm];
+          return;
+        }
+      } else {
+        /*** Fourth line **/
+        
+        int op = ((instruction) >> 9) & 0b1;
+        int ld = instruction & 0b111;
+        int ln = (instruction >> 3) & 0b111;
+        int immed3 = (instruction >> 6) & 0b111;
+
+        if (op == 0b0) {
+          /*** ADD | immed3, Ln, Ld ***/
+#ifdef DEBUG 
+          std::cout << "(Decoder) ADD | immed3, Ln, Ld" << std::endl;
+#endif
+          reg[ld] = immed3 + reg[ln];
+          return;
+        } else {
+          /*** SUB | immed3, Ln, Ld ***/
+#ifdef DEBUG 
+          std::cout << "(Decoder) SUB | immed3, Ln, Ld" << std::endl;
+#endif
+          reg[ld] = reg[ln] - immed3;
+          return;
+        }
+      }
     }
   }
 

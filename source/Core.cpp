@@ -17,7 +17,7 @@ void Core::describe() {
   std::cout << std::hex; /** show registers values in hex format */
   std::cout << std::setw(6) << "pc: " << "0x" << r[15] << std::endl;
   /** show thumb registers */
-  for (int index = 0; index < 7; ++index)
+  for (int index = 0; index < 8; ++index)
     std::cout << std::setw(6) << "r" << index << ": " << "0x" << r[index] << std::endl;
   std::cout << std::setw(6) << "cpsr: " << std::setw(13) << ps_to_string(cpsr) << std::endl;
   std::cout << std::setw(6) << "spsr: " << std::setw(13) << ps_to_string(spsr) << std::endl;
