@@ -1,6 +1,8 @@
 #ifndef THUMB_IMPLEMENTATION_H
 #define THUMB_IMPLEMENTATION_H
 
+#include "MemoryMap.h"
+
 /*** ARITHMETRICS ***/
 void ADC(int* regs, int* psr, int rd, int rm);
 void ADD_regs(int* regs, int rd, int rm);
@@ -36,13 +38,16 @@ void TST(int* regs, int* psr, int rd, int rm);
 int Tbit(int a, int b);
 
 /*** LOAD/STORE ***/
-void LDR(int* regs, int* mem, int rd, int addr);
-void STR(int* regs, int* mem, int rd, int addr);
-void LDRB(int* regs, int* mem, int rd, int addr);
-void STRB(int* regs, int* mem, int rd, int addr);
-void LDRH(int* regs, int* mem, int rd, int addr);
-void STRH(int* regs, int* mem, int rd, int addr);
-void LDRSB(int* regs, int* mem, int* psr, int rd, int addr);
-void STRSB(int* regs, int* mem, int* psr,int rd, int addr);
+void LDR(int* regs, MemoryMap* mem, int rd, int addr);
+void STR(int* regs, MemoryMap* mem, int rd, int addr);
+void LDRB(int* regs, MemoryMap* mem, int rd, int addr);
+void STRB(int* regs, MemoryMap* mem, int rd, int addr);
+void LDRH(int* regs, MemoryMap* mem, int rd, int addr);
+void STRH(int* regs, MemoryMap* mem, int rd, int addr);
+void LDRSB(int* regs, MemoryMap* mem, int* psr, int rd, int addr);
+void STRSB(int* regs, MemoryMap* mem, int* psr,int rd, int addr);
+
+void BX(int* regs, int* psr, int rm);
+void BLX_regs(int* regs, int* psr, int rm);
 
 #endif

@@ -23,8 +23,6 @@ void ADD_immed(int* regs, int rd, int rm, int immed) {
   regs[rd] = regs[rm] + immed;
 }
 
-//TODO: needs to terminate adds.
-
 void AND(int* regs, int rd, int rm) {
   regs[rd] = regs[rd] & regs[rm];  
 }
@@ -173,37 +171,55 @@ int Tbit(int a, int b) {
   return (a >> b) & 0b1;
 }
 
-void LDR(int* regs, int* mem, int rd, int addr) {
-  regs[rd] = mem[addr];
+void LDR(int* regs, MemoryMap* mem, int rd, int addr) {
+  regs[rd] = mem->fecthData(addr);
 }
 
-void STR(int* regs, int* mem, int rd, int addr) {
-  mem[addr] = regs[rd];
+void STR(int* regs, MemoryMap* mem, int rd, int addr) {
+  mem->setData(addr, regs[rd]);
 }
 
-void LDRB(int* regs, int* mem, int rd, int addr) {
-  regs[rd] = mem[addr] & 0xff;
+void LDRB(int* regs, MemoryMap* mem, int rd, int addr) {
+  regs[rd] = mem->fecthData(addr) & 0xff;
 }
 
-void STRB(int* regs, int* mem, int rd, int addr) {
-  mem[addr] = regs[rd] & 0xff;
+void STRB(int* regs, MemoryMap* mem, int rd, int addr) {
+  mem->setData(addr, regs[rd] & 0xff);
 }
 
-void LDRH(int* regs, int* mem, int rd, int addr) {
-  regs[rd] = mem[addr] & 0xffff;
+void LDRH(int* regs, MemoryMap* mem, int rd, int addr) {
+  regs[rd] = mem->fecthData(addr) & 0xffff;
 }
 
-void STRH(int* regs, int* mem, int rd, int addr) {
-  mem[addr] = regs[rd] & 0xffff;
+void STRH(int* regs, MemoryMap* mem, int rd, int addr) {
+  mem->setData(addr, regs[rd] & 0xffff);
 }
 
-void LDRSB(int* regs, int* mem, int* psr, int rd, int addr) {
+void LDRSB(int* regs, MemoryMap* mem, int* psr, int rd, int addr) {
   //TODO: implement signal extend
-  regs[rd] = mem[addr];
+  regs[rd] = mem->fecthData(addr);
 }
 
-void STRSB(int* regs, int* mem, int* psr,int rd, int addr) {
+void STRSB(int* regs, MemoryMap* mem, int* psr,int rd, int addr) {
   //TODO: implement signal extend
-  mem[addr] = regs[rd];
+  mem->setData(addr, regs[rd]);
 }
 
+void BX(int* regs, int* psr, int rm) {
+  regs[15] = regs[rm] & 0xfffffffe;
+  if ((regs[rm] & 0b1) == 0b1) {
+    psr[0] |= THUMB_MODE;
+  } else {
+    psr[0] &= ~THUMB_MODE;
+  }
+}
+
+void BLX_regs(int* regs, int* psr, int rm) {
+  regs[15] = regs[rm] & 0xfffffffe;
+  regs[14] = regs[15] + 2;
+  if ((regs[rm] & 0b1) == 0b1) {
+    psr[0] |= THUMB_MODE;
+  } else {
+    psr[0] &= ~THUMB_MODE;
+  }
+}

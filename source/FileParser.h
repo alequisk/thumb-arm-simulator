@@ -14,7 +14,7 @@ class FileParser {
 
   public:
     FileParser( std::string );
-    
+    FileParser();
     void handle();
     int string_to_hex( std::string );
     std::vector< std::pair<int, int>> get_program_mapped();

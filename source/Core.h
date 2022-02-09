@@ -3,6 +3,8 @@
 
 #include <string>
 #include "Decoder.h"
+#include "FileParser.h"
+#include "MemoryMap.h"
 
 class Core {
    private:
@@ -17,15 +19,21 @@ class Core {
 
     /** Decoder */
     Decoder decoder;
+
+    /*** Memory ***/
+    MemoryMap memory;
+
     
   public:
-    Core();
+    Core(std::string filename);
     void run();
     void run_instruction(short int);
     void load_program();
     void describe();
     std::string ps_to_string(int);
   
+    /*** File parser ***/
+    FileParser file_parser;
 };
 
 #endif

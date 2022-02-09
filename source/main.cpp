@@ -15,17 +15,14 @@ int main (int argc, char** argv) {
     return (1);
   }
   
-  FileParser file_parser( argv[1] );
-  Core core;
+  Core core = Core(argv[1]);
 
-  file_parser.handle();
-
-  for (auto p: file_parser.get_program_mapped()) {
-    core.run_instruction((p.second & LEFT_INSTRUCTION) >> 16);
-    core.run_instruction(p.second & RIGHT_INSTRUCTION);
+  while (true) {
+    core.run();
   }
-  core.describe();
   
+  core.describe();
+
   
   return (0);
 }

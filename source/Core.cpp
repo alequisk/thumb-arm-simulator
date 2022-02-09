@@ -4,12 +4,23 @@
 #include <iomanip>
 #include "Constants.h"
 
-Core::Core() : cpsr(SUPERVISOR_MODE | THUMB_MODE), spsr(0) {
+Core::Core(std::string filename) : cpsr(SUPERVISOR_MODE | THUMB_MODE), spsr(0) {
   r[0] = r[1] = r[2] = r[3] = r[4] = r[5] = r[6] = r[7] = 0; /** THUMB full access registers */
   r[8] = r[9] = r[10] = r[11] = r[12] = 0; /** ARM registers */
   r[13] = STACK_POINTER_ADDRESS; /** stack pointer */
   r[14] = 0; /** link register */
   r[15] = PROGRAM_MEM_ADDRESS; /** program count */
+
+  file_parser = FileParser(filename);
+  file_parser.handle();
+
+  std::map<int, int> prog_mem;
+
+  for (std::pair<int, int> cell: file_parser.get_program_mapped()) {
+    prog_mem[cell.first] = cell.second;
+  }
+  
+  memory = MemoryMap(prog_mem);
 }
 
 void Core::describe() {
@@ -44,6 +55,17 @@ std::string Core::ps_to_string(int psr) {
   return r;
 }
 
-void Core::run_instruction(short int instruction) {
-  decoder.decode(instruction, &cpsr, r);
+void Core::run() {
+  int instruction = memory.fetchProgramInstruction(r[15]);
+
+  if (instruction == 0) {
+    // no fetch data
+    std::cout << "Data abort. Unhandle instruction or unavaliable." << std::endl;
+    describe();
+    exit(0);
+  }
+
+  int status = decoder.decode(instruction, &cpsr, r, &memory);
+
+  r[15] += 2; // next instruction
 }

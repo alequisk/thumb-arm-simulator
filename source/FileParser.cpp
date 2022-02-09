@@ -42,7 +42,6 @@ void FileParser::handle() {
 
       int address_hex = string_to_hex(address);
       int instruction_hex = string_to_hex(instruction);
-
       program_parsed.emplace_back(address_hex, instruction_hex);
     }
   } else {
@@ -54,3 +53,5 @@ void FileParser::handle() {
 std::vector< std::pair<int, int>> FileParser::get_program_mapped() {
   return program_parsed;
 }
+
+FileParser::FileParser() {}
