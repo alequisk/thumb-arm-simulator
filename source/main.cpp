@@ -21,13 +21,10 @@ int main (int argc, char** argv) {
   file_parser.handle();
 
   for (auto p: file_parser.get_program_mapped()) {
-  
     core.run_instruction((p.second & LEFT_INSTRUCTION) >> 16);
-    core.describe();
-
     core.run_instruction(p.second & RIGHT_INSTRUCTION);
-    core.describe();
   }
+  core.describe();
   
   
   return (0);

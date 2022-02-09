@@ -1,167 +1,225 @@
 #include "Decoder.h"
 #include "Constants.h"
+#include "Implementation.h"
 #include <iostream>
 #include <limits.h>
 
-void Decoder::decode(signed short int instruction, int& psr, int *reg) {
+void Decoder::decode(signed short int instruction, int* psr, int *reg) {
   int instruction_code = (instruction >> 12) & 0b1111;
-
-  /*** First line ***/
+  
   if (instruction_code == 0b0000) {
-    int op = (instruction >> 11) & 0b1;
-    int ld = instruction & 0b111;
-    int lm = (instruction >> 3) & 0b111;
-    int immed5 = (instruction >> 6) & 0b11111;
-
-    if (op == 0b0) {
-      /*** LSL | immed5 Lm Ld ***/
-#ifdef DEBUG 
-      std::cout << std::hex << "(Decoder) LSL | immed5=" << immed5 << " Lm=" << lm << " Ld=" << ld << std::dec << std::endl;
-#endif
-      reg[ld] = reg[lm] << immed5; // execute
-      if ((reg[lm] >> (32 - immed5)) & 0b1) {
-        psr |= CARRY_FLAG; // set the flag
-      } else {
-        psr &= ~CARRY_FLAG; // clear carry flag
-      }
-      return;
+    int rm = (instruction >> 3) & 0b111;
+    int rd = instruction & 0b111;
+    int immed = (instruction >> 6) & 0b11111; // immed5
     
+    int op = (instruction >> 11) & 0b1;
+    if (op == 0b0) {
+      LSR_immed(reg, psr, rd, rm, immed);
+      return;  
     } else {
-      /*** LSR | immed5 Lm Ld ***/
-#ifdef DEBUG
-      std::cout << std::hex << "(Decoder) LSR | immed5=" << immed5 << " Lm=" << lm << " Ld=" << ld << std::dec << std::endl;
-#endif
-      reg[ld] = reg[lm] >> immed5; // execute
-      if ((reg[ld] >> (immed5 - 1)) & 0b1) {
-        psr |= CARRY_FLAG; // set the flag
-      } else {
-        psr &= ~CARRY_FLAG; // clear carry flag
-      }
+      LSR_immed(reg, psr, rd, rm, immed);
       return;
     }
   }
 
-  if (instruction_code == 0b0001) {
-    /*** Second line ***/
+  if (instruction_code == 0b0001 && Tbit(instruction, 11) == 0b0) {
+    int immed = (instruction >> 6) & 0b11111;
+    int rm = (instruction >> 3) & 0b111;
+    int rd = instruction & 0b111;
+    ASR_immed(reg, psr, rd, rm, immed);
+    return;
+  }
 
-    if (((instruction >> 11) & 0b1) == 0b0) {
-      /*** ASR | immed5 Lm Ld ***/
-#ifdef DEBUG 
-      std::cout << "(Decoder) ASR | immed5 Lm Ld" << std::endl;
-#endif
-      int ld = instruction & 0b111;
-      int lm = (instruction >> 3) & 0b111;
-      int immed5 = (instruction >> 6) & 0b11111;
-
-      reg[ld] = reg[lm] >> immed5; // execute
-      if ((reg[lm] >> (immed5 - 1)) & 0b1) {
-        psr |= CARRY_FLAG; // set the flag
-      } else {
-        psr &= ~CARRY_FLAG; // clear carry flag
-      }
+  if (instruction_code == 0b0001 && Tbit(instruction, 11) == 0b1 && Tbit(instruction, 10) == 0b0) {
+    int op = (instruction >> 9) & 0b1;
+    int rm = (instruction >> 6) & 0b111;
+    int rn = (instruction >> 3) & 0b111;
+    int rd = instruction & 0b111;
+    if (op == 0b0) {
+      ADD_regs(reg, rd, rn, rm);
       return;
     } else {
-      
-      if (((instruction >> 10) & 0b1) == 0b0) {
-        /*** Third line **/
-
-        int op = ((instruction) >> 9) & 0b1;
-        int ld = instruction & 0b111;
-        int ln = (instruction >> 3) & 0b111;
-        int lm = (instruction >> 6) & 0b111;
-
-        /*** ADD | SUB ***/
-        if (op == 0b0) {
-          /*** ADD | Lm, Ln, Ld ***/
-#ifdef DEBUG 
-          std::cout << "(Decoder) ADD | Lm, Ln, Ld" << std::endl;
-#endif
-          reg[ld] = reg[ln] + reg[lm];
-          return;
-        } else {
-
-          /*** SUB | Lm, Ln, Ld ***/
-#ifdef DEBUG 
-          std::cout << "(Decoder) SUB | Lm, Ln, Ld" << std::endl;
-#endif
-          reg[ld] = reg[ln] - reg[lm];
-          return;
-        }
-      } else {
-        /*** Fourth line **/
-        
-        int op = ((instruction) >> 9) & 0b1;
-        int ld = instruction & 0b111;
-        int ln = (instruction >> 3) & 0b111;
-        int immed3 = (instruction >> 6) & 0b111;
-
-        if (op == 0b0) {
-          /*** ADD | immed3, Ln, Ld ***/
-#ifdef DEBUG 
-          std::cout << "(Decoder) ADD | immed3, Ln, Ld" << std::endl;
-#endif
-          reg[ld] = immed3 + reg[ln];
-          return;
-        } else {
-          /*** SUB | immed3, Ln, Ld ***/
-#ifdef DEBUG 
-          std::cout << "(Decoder) SUB | immed3, Ln, Ld" << std::endl;
-#endif
-          reg[ld] = reg[ln] - immed3;
-          return;
-        }
-      }
+      SUB_regs(reg, rd, rn, rm);
+      return;
     }
   }
 
-  /*** Fifth line ***/
+  if (instruction_code == 0b0001 && Tbit(instruction, 11) == 0b1 && Tbit(instruction, 10) == 0b1) {
+    int op = (instruction >> 9) & 0b1;
+    int immed = (instruction >> 6) & 0b111;
+    int rn = (instruction >> 3) & 0b111;
+    int rd = instruction & 0b111;
+    if (op == 0b0) {
+      ADD_immed(reg, rd, rn, immed);
+      return;
+    } else {
+      SUB_immed(reg, rd, rn, immed);
+      return;
+    }
+  }
+
   if (instruction_code == 0b0010) {
     int op = (instruction >> 11) & 0b1;
-    int ld_ln = (instruction >> 8) & 0b111;
-    int immed8 = instruction & 0b11111111;
-
+    int immed = instruction & 0b11111111;
+    int rd = (instruction >> 8) & 0b111;
     if (op == 0b0) {
-      /*** MOV | Ld/Ln, immed8 ***/
-#ifdef DEBUG 
-      std::cout << "(Decoder) MOV | Ld/Ln, immed8" << std::endl;
-#endif     
-      reg[ld_ln] = immed8;
+      MOV_immed(reg, rd, immed);
       return;
     } else {
-      /*** CMP | Ld/Ln, immed8 ***/
-#ifdef DEBUG 
-      std::cout << "(Decoder) CMP | Ld/Ln, immed8" << std::endl;
-#endif
-
-      int64_t register_origin = reg[ld_ln];
-      int64_t immed8_64 = immed8;  
-
-      int64_t result = register_origin - immed8_64;
-
-
-      bool isNegative = (result >> 31) & 0b1;
-      bool isZero = result == 0b0;
-      bool haveOverflow = checkOverflow(reg[ld_ln], immed8, SUB);
-      bool haveCarry = false;
-      bool haveSaturation = haveOverflow;
-      
-      psr &= ~NEGATIVE_FLAG;
-      psr &= ~ZERO_FLAG;
-      psr &= ~CARRY_FLAG;
-      psr &= ~OVERFLOW_FLAG;
-      psr &= ~SATURATED_FLAG;
-
-      if (isNegative) psr |= NEGATIVE_FLAG;
-      if (isZero) psr |= ZERO_FLAG;
-      if (haveOverflow) psr |= OVERFLOW_FLAG;
-      if (haveCarry) psr |= CARRY_FLAG;
-      if (haveSaturation) psr |= SATURATED_FLAG;
-      
+      CMP_immed(reg, psr, rd, immed);
       return;
     }
   }
 
-  throw "Undefined instruction to decode."; // return Error of instruction
+  if (instruction_code == 0b0011) {
+    int op = (instruction >> 11) & 0b1;
+    int rd = (instruction >> 8) & 0b111;
+    int immed = instruction & 0b11111111;  
+    if (op == 0b0) {
+      ADD_immed(reg, rd, immed);
+      return;
+    } else {
+      SUB_immed(reg, rd, immed);
+      return;
+    }
+  }
+
+  if (instruction_code == 0b0100 && Tbit(instruction, 11) == 0b0) {
+    int next_three = (instruction >> 8) & 0b111;
+    if (next_three == 0b000) {
+      int op = (instruction >> 6) & 0b11;
+      int rm = (instruction >> 3) & 0b111;
+      int rd = instruction & 0b111;
+      if (op == 0b00) {
+        AND(reg, rd, rm);
+        return;
+      } else if (op == 0b01) {
+        EOR(reg, rd, rm);
+        return;
+      } else if (op == 0b10) {
+        LSL_reg(reg, psr, rd, rm);
+        return;
+      } else {
+        LSR_reg(reg, psr, rd, rm);
+        return;
+      }
+    } else if (next_three == 0b001) {
+      int op = (instruction >> 6) & 0b11;
+      int rm = (instruction >> 3) & 0b111;
+      int rd = instruction & 0b111;
+      if (op == 0b00) {
+        ASR_regs(reg, psr, rd, rm);
+        return;
+      } else if (op == 0b01) {
+        ADC(reg, psr, rd, rm);
+        return;
+      } else if (op == 0b10) {
+        SBC(reg, psr, rd, rm);
+        return;
+      } else {
+        ROR(reg, psr, rd, rm);
+        return;
+      }
+    } else if (next_three == 0b010) {
+      int op = (instruction >> 6) & 0b11;
+      int rm = (instruction >> 3) & 0b111;
+      int rd = instruction & 0b111;
+      if (op == 0b00) {
+        TST(reg, psr, rd, rm);
+        return;
+      } else if (op == 0b01) {
+        NEG(reg, rd, rm);
+        return;
+      } else if (op == 0b10) {
+        CMP_regs(reg, psr, rd, rm);
+        return;
+      } else {
+        CMN(reg, psr, rd, rm);
+        return;
+      }
+    } else if (next_three == 0b011) {
+      int op = (instruction >> 6) & 0b11;
+      int rm = (instruction >> 3) & 0b111;
+      int rd = instruction & 0b111;
+      if (op == 0b00) {
+        ORR(reg, rd, rm);
+        return;
+      } else if (op == 0b01) {
+        MUL(reg, rd, rm);
+        return;
+      } else if (op == 0b10) {
+        BIC(reg, rd, rm);
+        return;
+      } else {
+        MVN(reg, rd, rm);
+        return;
+      }
+    } else if (next_three == 0b110 && Tbit(instruction, 7) == 0b0 && Tbit(instruction, 6) == 0b0) {
+      int rm = (instruction >> 3) & 0b111;
+      int rd = instruction & 0b111;
+      CPY(reg, rd, rm);
+      return;
+    } else {
+      int other_three = (instruction >> 6) & 0b111;
+      if (other_three == 0b001) {
+        int hm = (instruction >> 3) & 0b111;
+        int ld = instruction & 0b111;
+        int op = (instruction >> 9) & 0b1;
+        if (op == 0b0) {
+          ADD_regs(reg, ld, hm + 8);
+          return;
+        } else {
+          MOV_regs(reg, ld, hm + 8);
+          return;
+        }
+      } else if (other_three == 0b010) {
+        int lm = (instruction >> 3) & 0b111;
+        int hd = instruction & 0b111;
+        int op = (instruction >> 9) & 0b1;
+        if (op == 0b0) {
+          ADD_regs(reg, hd + 8, lm);
+          return;
+        } else {
+          MOV_regs(reg, hd + 8, lm);
+          return;
+        }
+      } else if (other_three == 0b011) {
+        int hm = (instruction >> 3) & 0b111;
+        int hd = instruction & 0b111;
+        int op = (instruction >> 9) & 0b1;
+        if (op == 0b0) {
+          ADD_regs(reg, hd + 8, hm + 8);
+          return;
+        } else {
+          MOV_regs(reg, hd + 8, hm + 8);
+          return;
+        }
+      } else if (other_three == 0b101 && Tbit(instruction, 9) == 0b0) {
+        int hm = (instruction >> 3) & 0b111;
+        int ln = instruction & 0b111;
+        CMP_regs(reg, psr, hm + 8, ln);
+        return;
+      } else if (other_three == 0b110 && Tbit(instruction, 9) == 0b0) {
+        int lm = (instruction >> 3) & 0b111;
+        int hn = instruction & 0b111;
+        CMP_regs(reg, psr, lm, hn + 8);
+        return;
+      } else if (other_three == 0b111 && Tbit(instruction, 9) == 0b0) {
+        int hm = (instruction >> 3) & 0b111;
+        int hn = instruction & 0b111;
+        CMP_regs(reg, psr, hm + 8, hn + 8);
+        return;
+      } else {
+        //int op = (instruction >> 7) & 0b1;
+        //int rm = (instruction >> 3) & 0b1111;
+        //TODO: make BLX and BL instructions
+      }
+    }
+  }
+
+  std::cout << "Undefined instruction to decode" << std::endl;
+
+  //throw "Undefined instruction to decode."; // return Error of instruction
 }
 
 bool Decoder::checkOverflow(int a, int b, OPERATORS op) {

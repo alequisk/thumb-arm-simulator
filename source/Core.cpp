@@ -10,7 +10,6 @@ Core::Core() : cpsr(SUPERVISOR_MODE | THUMB_MODE), spsr(0) {
   r[13] = STACK_POINTER_ADDRESS; /** stack pointer */
   r[14] = 0; /** link register */
   r[15] = PROGRAM_MEM_ADDRESS; /** program count */
-  r[0] = 1;
 }
 
 void Core::describe() {
@@ -46,5 +45,5 @@ std::string Core::ps_to_string(int psr) {
 }
 
 void Core::run_instruction(short int instruction) {
-  decoder.decode(instruction, cpsr, r);
+  decoder.decode(instruction, &cpsr, r);
 }

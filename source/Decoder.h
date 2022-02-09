@@ -8,7 +8,7 @@ enum OPERATORS {
 
 class Decoder {
   public:
-    void decode(signed short int, int&, int*);
+    void decode(signed short int, int*, int*);
     bool checkOverflow(int, int, OPERATORS);
 };
 

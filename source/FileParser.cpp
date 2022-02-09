@@ -46,7 +46,7 @@ void FileParser::handle() {
       program_parsed.emplace_back(address_hex, instruction_hex);
     }
   } else {
-    std::cerr << "unable to open file!" << std::endl;
+    std::cout << "unable to open file!" << std::endl;
     exit(1);
   }
 }
