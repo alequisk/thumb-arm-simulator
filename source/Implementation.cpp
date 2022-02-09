@@ -1,6 +1,7 @@
 #include "Constants.h"
 #include "Implementation.h"
 
+#include <limits.h>
 #include <cstdint>
 
 void ADC(int* regs, int* psr, int rd, int rm) {
@@ -50,17 +51,64 @@ void BIC(int* regs, int rd, int rm) {
 }
 
 void CMN(int* regs, int* psr, int rn, int rm) {
-  //TODO: set flags by sum values;
+  int result = regs[rn] + regs[rm];
+  if (result < 0) {
+    psr[0] |= NEGATIVE_FLAG;
+  } else {
+    psr[0] &= ~NEGATIVE_FLAG;
+  }
+  if (result == 0) {
+    psr[0] |= ZERO_FLAG;
+  } else {
+    psr[0] &= ~ZERO_FLAG;
+  }
+  
+  if (((regs[rm] > 0) && (regs[rn] > INT_MAX - regs[rm])) || ((regs[rm] < 0) && (regs[rn] < INT_MIN - regs[rm]))) {
+    psr[0] |= OVERFLOW_FLAG;
+  } else {
+    psr[0] &= ~OVERFLOW_FLAG;
+  }
 }
 
 void CMP_regs(int* regs, int* psr, int rn, int rm) {
-  //TODO: set flags by subtract values;
+
+  int result = regs[rn] - regs[rm];
+  if (result < 0) {
+    psr[0] |= NEGATIVE_FLAG;
+  } else {
+    psr[0] &= ~NEGATIVE_FLAG;
+  }
+
+  if (result == 0) {
+    psr[0] |= ZERO_FLAG;
+  } else {
+    psr[0] &= ~ZERO_FLAG;
+  }
+
+  if (((regs[rm] < 0) && (regs[rn] > INT_MAX + regs[rm])) ||  ((regs[rm] > 0) && (regs[rn] < INT_MIN + regs[rm]))) {
+    psr[0] |= OVERFLOW_FLAG;
+  } else {
+    psr[0] &= ~OVERFLOW_FLAG;
+  }
 }
 
 void CMP_immed(int* regs, int* psr, int rn, int immed) {
-  //TODO: set flags by subtract values;
   int result = regs[rn] - immed;
-  
+  if (result < 0) {
+    psr[0] |= NEGATIVE_FLAG;
+  } else {
+    psr[0] &= ~NEGATIVE_FLAG;
+  }
+  if (result == 0) {
+    psr[0] |= ZERO_FLAG;
+  } else {
+    psr[0] &= ~ZERO_FLAG;
+  }
+  if (((immed < 0) && (regs[rn] > INT_MAX + immed)) ||  ((immed > 0) && (regs[rn] < INT_MIN + immed))) {
+    psr[0] |= OVERFLOW_FLAG;
+  } else {
+    psr[0] &= ~OVERFLOW_FLAG;
+  }
 }
 
 void CPY(int* regs, int rd, int rm) {
@@ -167,6 +215,17 @@ void SUB_regs(int* regs, int rd, int rn, int rm) {
 void TST(int* regs, int* psr, int rd, int rm) {
   //TODO: set flags of and
   int And = regs[rd] & regs[rm];
+  if (And == 0) {
+    psr[0] |= ZERO_FLAG;
+  } else {
+    psr[0] &= ~ZERO_FLAG;
+  }
+
+  if (And < 0) {
+    psr[0] |= NEGATIVE_FLAG;
+  } else {
+    psr[0] &= ~NEGATIVE_FLAG;
+  }
 }
 
 int Tbit(int a, int b) {
