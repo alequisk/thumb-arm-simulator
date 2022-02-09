@@ -230,10 +230,10 @@ int Decoder::decode(signed short int instruction, int* psr, int *reg, MemoryMap*
   if (instruction_code == 0b1011 && ((instruction >> 9) & 0b11) == 0b10) {
     int op = (instruction >> 11) & 0b1;
     if (op == 0b0) {
-      PUSH(reg, instruction & 0xff);
+      PUSH(reg, mem, instruction & 0xff);
       return 0;
     } else {
-      POP(reg, instruction & 0xff);
+      POP(reg, mem, instruction & 0xff);
       return 0;
     }
   }

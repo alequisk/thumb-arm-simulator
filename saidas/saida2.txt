@@ -1,0 +1,29 @@
+Data abort. Unhandle instruction or unavaliable.
+#####################
+------CORE STATS-----
+  pc: 0x30
+     r0: 0x2
+     r1: 0x0
+     r2: 0x0
+     r3: 0x0
+     r4: 0x0
+     r5: 0x0
+     r6: 0x0
+     r7: 0x0
+cpsr: nzcvqjifT_svc
+spsr: --------- ---
+#####################
+------MEMORY MAP-----
+0x0:28072000
+0x4:b401d002
+0x8:e7fa3001
+0xc:be00bc7f
+0x10:be00b47f
+0x14:1bc0bc80
+0x18:43b9bc80
+0x1c:40fabc80
+0x20:437bbc80
+0x24:433cbc80
+0x28:403dbc80
+0x2c:19f6bc80
+0x30:0

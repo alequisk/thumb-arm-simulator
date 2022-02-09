@@ -39,7 +39,7 @@ void Core::describe() {
   std::cout << "------MEMORY MAP-----" << std::endl;
   for (auto f: memory.program_map) {
     std::cout << std::hex;
-    std::cout << f.first << ":" << f.second << std::endl;
+    std::cout << "0x" << f.first << ":" << f.second << std::endl;
     std::cout << std::dec;
   }
 }

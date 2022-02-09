@@ -13,17 +13,17 @@ cpsr: nzcvqjifT_svc
 spsr: --------- ---
 #####################
 ------MEMORY MAP-----
-0:22022101
-4:20902303
-8:42841c04
-c:db0bd10c
-10:f000dc0a
-14:e7fef801
-18:b500c00e
-1c:43c1be00
-20:405b18d2
-24:bd00cce0
-28:e7e9be00
+0x0:22022101
+0x4:20902303
+0x8:42841c04
+0xc:db0bd10c
+0x10:f000dc0a
+0x14:e7fef801
+0x18:b500c00e
+0x1c:43c1be00
+0x20:405b18d2
+0x24:bd00cce0
+0x28:e7e9be00
 Data abort. Unhandle instruction or unavaliable.
 #####################
 ------CORE STATS-----
@@ -40,15 +40,15 @@ cpsr: nzcvqjifT_svc
 spsr: --------- ---
 #####################
 ------MEMORY MAP-----
-0:22022101
-4:20902303
-8:42841c04
-c:db0bd10c
-10:f000dc0a
-14:e7fef801
-18:b500c00e
-1c:43c1be00
-20:405b18d2
-24:bd00cce0
-28:e7e9be00
-2c:0
+0x0:22022101
+0x4:20902303
+0x8:42841c04
+0xc:db0bd10c
+0x10:f000dc0a
+0x14:e7fef801
+0x18:b500c00e
+0x1c:43c1be00
+0x20:405b18d2
+0x24:bd00cce0
+0x28:e7e9be00
+0x2c:0
