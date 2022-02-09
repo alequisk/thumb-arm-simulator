@@ -66,4 +66,7 @@ void BPL(int* regs, int* psr, int offset);
 void BVS(int* regs, int* psr, int offset);
 void BVC(int* regs, int* psr, int offset);
 
+void POP(int* regs, MemoryMap* mem, int bitlist);
+void PUSH(int* regs, MemoryMap* mem, int bitlist);
+
 #endif

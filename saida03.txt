@@ -1,0 +1,54 @@
+#####################
+------CORE STATS-----
+  pc: 0x2a
+     r0: 0x0
+     r1: 0x1
+     r2: 0x0
+     r3: 0x3
+     r4: 0x0
+     r5: 0x0
+     r6: 0x0
+     r7: 0x0
+cpsr: nzcvqjifT_svc
+spsr: --------- ---
+#####################
+------MEMORY MAP-----
+0:22022101
+4:20902303
+8:42841c04
+c:db0bd10c
+10:f000dc0a
+14:e7fef801
+18:b500c00e
+1c:43c1be00
+20:405b18d2
+24:bd00cce0
+28:e7e9be00
+Data abort. Unhandle instruction or unavaliable.
+#####################
+------CORE STATS-----
+  pc: 0x2c
+     r0: 0x0
+     r1: 0x1
+     r2: 0x0
+     r3: 0x3
+     r4: 0x0
+     r5: 0x0
+     r6: 0x0
+     r7: 0x0
+cpsr: nzcvqjifT_svc
+spsr: --------- ---
+#####################
+------MEMORY MAP-----
+0:22022101
+4:20902303
+8:42841c04
+c:db0bd10c
+10:f000dc0a
+14:e7fef801
+18:b500c00e
+1c:43c1be00
+20:405b18d2
+24:bd00cce0
+28:e7e9be00
+2c:0

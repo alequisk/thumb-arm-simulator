@@ -227,6 +227,17 @@ int Decoder::decode(signed short int instruction, int* psr, int *reg, MemoryMap*
     return 1;
   }
 
+  if (instruction_code == 0b1011 && ((instruction >> 9) & 0b11) == 0b10) {
+    int op = (instruction >> 11) & 0b1;
+    if (op == 0b0) {
+      PUSH(reg, instruction & 0xff);
+      return 0;
+    } else {
+      POP(reg, instruction & 0xff);
+      return 0;
+    }
+  }
+
   if (instruction_code == 0b0100 && Tbit(instruction, 11) == 0b1) {
     int immed = instruction & 0b11111111; // immed8
     int ld = (instruction >> 8) & 0b111;

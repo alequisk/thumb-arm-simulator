@@ -373,3 +373,16 @@ void BVC(int* regs, int* psr, int offset) {
   }
 }
 
+void PUSH(int* regs, MemoryMap* mem, int bitlist) {
+  for (int i = 0; i < 8; ++i) {
+    int b = (bitlist >> i) & 0b1;
+  }
+}
+
+void POP(int* regs, MemoryMap* mem, int bitlist) {
+  for (int i = 0; i < 8; ++i) {
+    if ((bitlist >> i) & 0b1) {
+      
+    }
+  }
+}
