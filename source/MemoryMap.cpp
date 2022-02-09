@@ -17,6 +17,11 @@ int MemoryMap::fetchProgramInstruction(int pc) {
 
 MemoryMap::MemoryMap(std::map<int, int> program_map) {
   this->program_map = program_map;
+  for (auto f: program_map) {
+    std::cout << std::hex;
+    std::cout << f.first << " " << f.second << std::endl;
+    std::cout << std::dec;
+  }
 }
 
 int MemoryMap::fecthData(int addr) {

@@ -3,10 +3,8 @@
 
 #include <map>
 class MemoryMap {
-  private:
-    std::map<int, int> program_map;
-    
   public:
+    std::map<int, int> program_map;
     int fetchProgramInstruction(int pc);
     int fecthData(int addr);
     void setData(int addr, int value);

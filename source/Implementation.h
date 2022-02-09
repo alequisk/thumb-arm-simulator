@@ -49,5 +49,21 @@ void STRSB(int* regs, MemoryMap* mem, int* psr,int rd, int addr);
 
 void BX(int* regs, int* psr, int rm);
 void BLX_regs(int* regs, int* psr, int rm);
+void BHI(int *regs, int* psr, int offset);
+void BLS(int* regs, int* psr, int offset);
+void BGE(int* regs, int* psr, int offset);
+void BLT(int* regs, int* psr, int offset);
+void BGT(int* regs, int* psr, int offset);
+void BLE(int* regs, int* psr, int offset);
+void BAL(int* regs, int* psr, int offset);
+void BEQ(int* regs, int* psr, int offset);
+void BNE(int* regs, int* psr, int offset);
+void BHS(int* regs, int* psr, int offset);
+void BLO(int* regs, int* psr, int offset);
+
+void BMI(int* regs, int* psr, int offset);
+void BPL(int* regs, int* psr, int offset);
+void BVS(int* regs, int* psr, int offset);
+void BVC(int* regs, int* psr, int offset);
 
 #endif

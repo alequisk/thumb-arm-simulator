@@ -59,6 +59,8 @@ void CMP_regs(int* regs, int* psr, int rn, int rm) {
 
 void CMP_immed(int* regs, int* psr, int rn, int immed) {
   //TODO: set flags by subtract values;
+  int result = regs[rn] - immed;
+  
 }
 
 void CPY(int* regs, int rd, int rm) {
@@ -223,3 +225,92 @@ void BLX_regs(int* regs, int* psr, int rm) {
     psr[0] &= ~THUMB_MODE;
   }
 }
+
+void BHI(int *regs, int* psr, int offset) {
+  if ((psr[0] & ZERO_FLAG) == 0 && (psr[0] & CARRY_FLAG) != 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BLS(int* regs, int* psr, int offset) {
+  if ((psr[0] & ZERO_FLAG) != 0 || (psr[0] & CARRY_FLAG) == 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BGE(int* regs, int* psr, int offset) {
+  if (((psr[0] & NEGATIVE_FLAG) != 0 && (psr[0] & OVERFLOW_FLAG) != 0) || ((psr[0] & NEGATIVE_FLAG) == 0 && (psr[0] & OVERFLOW_FLAG) == 0)) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BLT(int* regs, int* psr, int offset) {
+  if (((psr[0] & NEGATIVE_FLAG) != 0 && (psr[0] & OVERFLOW_FLAG) == 0) || ((psr[0] & NEGATIVE_FLAG) == 0 && (psr[0] & OVERFLOW_FLAG) != 0)) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BGT(int* regs, int* psr, int offset) {
+  if (((psr[0] & NEGATIVE_FLAG) != 0 && (psr[0] & OVERFLOW_FLAG) != 0 && (psr[0] & ZERO_FLAG) == 0) || ((psr[0] & NEGATIVE_FLAG) == 0 && (psr[0] & OVERFLOW_FLAG) == 0 && (psr[0] & ZERO_FLAG) == 0)) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BLE(int* regs, int* psr, int offset) {
+  if ((psr[0] & ZERO_FLAG) != 0 || ((psr[0] & NEGATIVE_FLAG) != 0 && (psr[0] & OVERFLOW_FLAG) == 0) || ((psr[0] & NEGATIVE_FLAG) == 0 && (psr[0] & OVERFLOW_FLAG) != 0)) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BAL(int* regs, int* psr, int offset) {
+  regs[15] = regs[15] + 4 + offset * 2;
+}
+
+void BEQ(int* regs, int* psr, int offset) {
+  if ((psr[0] & ZERO_FLAG) != 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BNE(int* regs, int* psr, int offset) {
+  if ((psr[0] & ZERO_FLAG) == 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BHS(int* regs, int* psr, int offset) {
+  if ((psr[0] & CARRY_FLAG) != 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BLO(int* regs, int* psr, int offset) {
+  if ((psr[0] & CARRY_FLAG) == 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BMI(int* regs, int* psr, int offset) {
+  if ((psr[0] & NEGATIVE_FLAG) != 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BPL(int* regs, int* psr, int offset) {
+  if ((psr[0] & NEGATIVE_FLAG) == 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BVS(int* regs, int* psr, int offset) {
+  if ((psr[0] & OVERFLOW_FLAG) != 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+
+void BVC(int* regs, int* psr, int offset) {
+  if ((psr[0] & OVERFLOW_FLAG) == 0) {
+    regs[15] = regs[15] + 4 + offset * 2;
+  }
+}
+

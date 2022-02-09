@@ -223,6 +223,10 @@ int Decoder::decode(signed short int instruction, int* psr, int *reg, MemoryMap*
     }
   }
 
+  if (instruction_code == 0b1011 && ((instruction >> 8) & 0b1111) == 0b1110) {
+    return 1;
+  }
+
   if (instruction_code == 0b0100 && Tbit(instruction, 11) == 0b1) {
     int immed = instruction & 0b11111111; // immed8
     int ld = (instruction >> 8) & 0b111;
@@ -232,7 +236,68 @@ int Decoder::decode(signed short int instruction, int* psr, int *reg, MemoryMap*
 
   if (instruction_code == 0b1101) {
     int next_four = (instruction >> 8) & 0b1111;
-    if (next_four == 0b1110) {
+    
+    if (next_four == 0b0000) {
+      int offset = instruction & 0b11111111;
+      BEQ(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b0001) {
+      int offset = instruction & 0b11111111;
+      BNE(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b0010) {
+      int offset = instruction & 0b11111111;
+      BHS(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b0011) {
+      int offset = instruction & 0b11111111;
+      BLO(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b0100) {
+      int offset = instruction & 0b11111111;
+      BMI(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b0101) {
+      int offset = instruction & 0b11111111;
+      BPL(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b0110) {
+      int offset = instruction & 0b11111111;
+      BVS(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b0111) {
+      int offset = instruction & 0b11111111;
+      BVC(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1000) {
+      int offset = instruction & 0b11111111;
+      BHI(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1001) {
+      int offset = instruction & 0b11111111;
+      BLS(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1010){
+      int offset = instruction & 0b11111111;
+      BGE(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1011) {
+      int offset = instruction & 0b11111111;
+      BLT(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1100) {
+      int offset = instruction & 0b11111111;
+      BGT(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1101) {
+      int offset = instruction & 0b11111111;
+      BLE(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1110) {
+      int offset = instruction & 0b11111111;
+      BAL(reg, psr, offset);
+      return 0;
+    } else if (next_four == 0b1110) {
       std::cout << "Unlist instruction" << std::endl;
       return 0;
     } else if (next_four == 0b1111) {

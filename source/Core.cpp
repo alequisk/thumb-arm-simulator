@@ -9,7 +9,7 @@ Core::Core(std::string filename) : cpsr(SUPERVISOR_MODE | THUMB_MODE), spsr(0) {
   r[8] = r[9] = r[10] = r[11] = r[12] = 0; /** ARM registers */
   r[13] = STACK_POINTER_ADDRESS; /** stack pointer */
   r[14] = 0; /** link register */
-  r[15] = PROGRAM_MEM_ADDRESS; /** program count */
+  r[15] = 0; /** program count */
 
   file_parser = FileParser(filename);
   file_parser.handle();
@@ -24,6 +24,8 @@ Core::Core(std::string filename) : cpsr(SUPERVISOR_MODE | THUMB_MODE), spsr(0) {
 }
 
 void Core::describe() {
+  std::cout << "#####################" << std::endl;
+  std::cout << "------CORE STATS-----" << std::endl;
   std::cout << std::hex; /** show registers values in hex format */
   std::cout << std::setw(6) << "pc: " << "0x" << r[15] << std::endl;
   /** show thumb registers */
@@ -32,6 +34,14 @@ void Core::describe() {
   std::cout << std::setw(6) << "cpsr: " << std::setw(13) << ps_to_string(cpsr) << std::endl;
   std::cout << std::setw(6) << "spsr: " << std::setw(13) << ps_to_string(spsr) << std::endl;
   std::cout << std::dec; /** restore default values format */
+
+  std::cout << "#####################" << std::endl;
+  std::cout << "------MEMORY MAP-----" << std::endl;
+  for (auto f: memory.program_map) {
+    std::cout << std::hex;
+    std::cout << f.first << ":" << f.second << std::endl;
+    std::cout << std::dec;
+  }
 }
 
 std::string Core::ps_to_string(int psr) {
@@ -66,6 +76,13 @@ void Core::run() {
   }
 
   int status = decoder.decode(instruction, &cpsr, r, &memory);
+  if (status == 2) {
+    std::cout << std::hex << instruction << std::dec << std::endl;
+  }
+
+  if (status == 1) {
+    describe();
+  }
 
   r[15] += 2; // next instruction
 }
